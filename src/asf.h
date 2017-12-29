@@ -52,6 +52,9 @@
  * running the ASF driver selector tool. Any changes will be discarded.
  */
 
+// From module: ADC - XMEGA A/AU Implementation
+#include <adc.h>
+
 // From module: CPU specific features
 #include <ccp.h>
 #include <xmega_reset_cause.h>
@@ -96,8 +99,8 @@
 #include <spi.h>
 
 // From module: SPI - XMEGA implementation
-#include <usart_spi.h>
-#include <xmega_usart_spi/usart_spi.h>
+#include <spi_master.h>
+#include <spi_master.h>
 
 // From module: ST7565R LCD controller
 #include <st7565r.h>

@@ -31,15 +31,15 @@
 #include <asf.h>
 #include <stdio.h>
 #include <string.h>
-#include "DHT.h"
+#include <adc_sensors/adc_sensors.h>
+#include <usart.h>
 
 
 #define USART_SERIAL_EXAMPLE             &USARTC0
 #define USART_SERIAL_EXAMPLE_BAUDRATE    9600
 #define USART_SERIAL_CHAR_LENGTH         USART_CHSIZE_8BIT_gc
 #define USART_SERIAL_PARITY              USART_PMODE_DISABLED_gc
-#define USART_SERIAL_STOP_BIT            false
-#define DHTpin                           
+#define USART_SERIAL_STOP_BIT            false                          
 
 static char strbuf[201];
 static char reads[100];
@@ -60,11 +60,6 @@ void setup_timer(void){
     tc_write_period(&TCC0, 58);
     tc_set_overflow_interrupt_level(&TCC0, TC_INT_LVL_HI);
     tc_write_clock_source(&TCC0, TC_CLKSEL_DIV1_gc);    
-}
-
-//Fungsi ini bukan utk print message, tapi increment nilai variabel "increment" setiap 29us
-void print_message(void){
-    incremental = incremental + 1;
 }
 
 void setUpSerial()
