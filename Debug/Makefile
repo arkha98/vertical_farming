@@ -78,7 +78,9 @@ SUBDIRS :=  \
 ../src/ASF/xmega/utils/assembler/ \
 ../src/ASF/xmega/utils/bit_handling/ \
 ../src/ASF/xmega/utils/preprocessor/ \
-../src/config/
+../src/config/ \
+../vertical_farming/ \
+../vertical_farming/src/
 
 
 # Add inputs and outputs from these tool invocations to the build variables 
