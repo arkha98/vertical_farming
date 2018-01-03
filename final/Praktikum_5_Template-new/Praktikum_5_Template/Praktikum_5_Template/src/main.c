@@ -146,6 +146,7 @@ static uint16_t adc_read(){
 	return result;
 }
 
+//
 static uint16_t adc_read2(){
 	uint16_t result;
 	ntc_measure();
@@ -167,33 +168,33 @@ static uint16_t adc_read3(){
 
 int main (void)
 {
-	// Insert system clock initialization code here (sysclk_init()).
-
-	
+	//Inintialize Board
 	board_init();
 	pmic_init();
 	
-	
-	
+	// Inintialize adc sensor
 	adc_init();
 	adc_init2();
 	adc_init3();
+	
+	//Inintialize LED board
 	gfx_mono_init();
 	
+	//Membuat Ping yang dapat digunakan sebagai timer.
 	TimerHandle_t timerPing = xTimerCreate("tPing", 2/portTICK_PERIOD_MS, pdTRUE, (void *) 0, vTimerCallback);
 	
-	xTaskCreate(testLamp,"",500,NULL,1,NULL);
-	xTaskCreate(testLCD,"",500,NULL,1,NULL);
-	xTaskCreate(testLightS,"",500,NULL,1,NULL);
-	xTaskCreate(testTempS,"",500,NULL,1,NULL);
-	xTaskCreate(testServo,"",500,NULL,1,NULL);
-	xTaskCreate(testMoisture,"",500,NULL,1,NULL);
+	xTaskCreate(testLamp,"",500,NULL,1,NULL);		//inintialize function lampu pada Board
+	xTaskCreate(testLCD,"",500,NULL,1,NULL);		//inintialize  function LCD
+	xTaskCreate(testLightS,"",500,NULL,1,NULL);		//inintialize  function lampu untuk pencahayaan tanaman
+	xTaskCreate(testTempS,"",500,NULL,1,NULL);		//inintialize  function sensor suhu
+	xTaskCreate(testMoisture,"",500,NULL,1,NULL);	//inintialize  function Sensor kelembapan tanah 
 	
-	xTimerStart(timerPing, 0);
+	xTimerStart(timerPing, 0);			// Memulai timer waktu
 	
 	vTaskStartScheduler();
 
-	// Insert application code here, after the board has been initialized.
+	// Code here
+	
 }
 
 static portTASK_FUNCTION(testLamp, p_){
@@ -230,9 +231,9 @@ static portTASK_FUNCTION(testLCD, p_){
 
 static portTASK_FUNCTION(testLightS, p_){
 	while(1){
-		lightsensor_measure();									// Mengambil data dari pengukuran intensitas oleh light sensor
-		while(!lightsensor_data_is_ready());					// Menunggu data sampai siap untuk ditampilkan
-		intensity += lightsensor_get_raw_value();				// Mengambil hasil olah data dalam raw ADC value
+		lightsensor_measure();							// Mengambil data dari pengukuran intensitas oleh light sensor
+		while(!lightsensor_data_is_ready());			// Menunggu data sampai siap untuk ditampilkan
+		intensity += lightsensor_get_raw_value();		// Mengambil hasil olah data dalam raw ADC value
 
 		// Dikarenakan hasil yang diperoleh merupakan data raw diperlukan sampling agar mendapatkan hasil yang baik
 		if(iterations++ >= LIGHTSENSOR_NUM_SAMPLES) {
@@ -249,8 +250,8 @@ static portTASK_FUNCTION(testLightS, p_){
 
 static portTASK_FUNCTION(testTempS, p_){
 	while(1){
-		ntc_measure();												// Mengambil data dari pengukuran suhu oleh NTC temperature sensor
-		while(!ntc_data_is_ready());								// Menunggu data sampai siap untuk ditampilkan
+		ntc_measure();								// Mengambil data dari pengukuran suhu oleh NTC temperature sensor
+		while(!ntc_data_is_ready());				// Menunggu data sampai siap untuk ditampilkan
 		volatile int8_t temperature = ntc_get_temperature();	// Mengambil hasil olah data dalam Celcius
 		result2 = temperature;
 		vTaskDelay(10/portTICK_PERIOD_MS);
@@ -266,30 +267,5 @@ static portTASK_FUNCTION(testMoisture, p_){
 		int a = moisture;
 		result3 = a;
 		vTaskDelay(10/portTICK_PERIOD_MS);
-	}
-}
-
-
-static portTASK_FUNCTION(testServo, p_){
-	PWM_Init();
-	
-	while(1){
-		if(gpio_pin_is_low(GPIO_PUSH_BUTTON_1) && gpio_pin_is_high(GPIO_PUSH_BUTTON_2)){
-			//delay_ms(50);
-			TCC0.CCA = 130;
-			gpio_set_pin_low(LED2_GPIO);
-			gpio_set_pin_high(LED3_GPIO);
-			door = 1;
-		}else if(gpio_pin_is_low(GPIO_PUSH_BUTTON_2) && gpio_pin_is_high(GPIO_PUSH_BUTTON_1)){
-			TCC0.CCA = 1;
-			gpio_set_pin_low(LED3_GPIO);
-			gpio_set_pin_high(LED2_GPIO);
-			door = 2;
-		}else if(gpio_pin_is_high(GPIO_PUSH_BUTTON_1) && gpio_pin_is_high(GPIO_PUSH_BUTTON_2)){
-			TCC0.CCA = 350;
-			gpio_set_pin_high(LED3_GPIO);
-			gpio_set_pin_high(LED2_GPIO);
-			door = 0;
-		}
 	}
 }
